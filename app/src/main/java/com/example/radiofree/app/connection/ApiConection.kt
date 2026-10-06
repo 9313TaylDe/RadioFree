@@ -10,6 +10,6 @@ object ApiConection {
         .addConverterFactory(GsonConverterFactory.create())
         .build()
         .create(
-            ApiResponde::class.java
-        )
+        ApiResponde::class.java
+    )
 }
