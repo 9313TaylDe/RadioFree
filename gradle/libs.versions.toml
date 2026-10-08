@@ -4,6 +4,7 @@ ksp = "2.1.10-1.0.29"
 material3 = "1.4.0"
 runtime = "1.12.1"
 foundation = "1.12.1"
+monitor = "1.8.0"
 
 [libraries]
 androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version = "1.7.6" }
@@ -14,6 +15,7 @@ androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime
 androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 androidx-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "runtime" }
 androidx-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
+androidx-monitor = { group = "androidx.test", name = "monitor", version.ref = "monitor" }
 
 [plugins]
 android-application = { id = "com.android.application", version = "8.6.0" }

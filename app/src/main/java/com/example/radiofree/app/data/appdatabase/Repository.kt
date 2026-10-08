@@ -10,14 +10,18 @@ import com.example.radiofree.app.data.dao.RadioStatesDAO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import java.util.UUID
 
 class Repository(
     private val apiResponde: ApiResponde, val radioStatesDAO: RadioStatesDAO
 ) {
+val _languages = MutableStateFlow<List<Languages>>(emptyList())
+    val languages: StateFlow<List<Languages>> = _languages.asStateFlow()
 
     val _isFavorite = MutableStateFlow(false)
     val isFavorite: StateFlow<Boolean> = _isFavorite
+
 
     suspend fun checkFavotire(statiUUID: String){
         _isFavorite.value = radioStatesDAO.isFavorite(statiUUID)
@@ -390,7 +394,10 @@ class Repository(
 
 
     suspend fun getAllLanguages(): List<Languages> {
-        return apiResponde.getByLanguages()
+        return apiResponde.getByLanguages(
+            offset = 0,
+            limit = 100
+        )
     }
 
     suspend fun getByLanguageFilter(

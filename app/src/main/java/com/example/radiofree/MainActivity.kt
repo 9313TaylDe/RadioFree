@@ -11,37 +11,49 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.room.Room
+import com.example.radiofree.app.connection.ApiConection
+import com.example.radiofree.app.connection.ApiResponde
+import com.example.radiofree.app.data.appdatabase.AppDataBase
+import com.example.radiofree.app.data.appdatabase.Repository
+import com.example.radiofree.app.data.dao.RadioStatesDAO
+import com.example.radiofree.app.data.viewmodel.ViewModelClass
+import com.example.radiofree.app.data.viewmodel.ViewModelFactorys
+import com.example.radiofree.app.ui.MenuMobile
+import com.example.radiofree.app.ui.ScreenHome
 import com.example.radiofree.ui.theme.RadioFreeTheme
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            RadioFreeTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+            val database = Room.databaseBuilder(
+                applicationContext,
+                AppDataBase::class.java,
+                "db"
+            ).build()
+            val appDataBase = database.radiostates()
+
+            val repositoy = Repository(
+                apiResponde = ApiConection.api,
+                radioStatesDAO = appDataBase
+            )
+            val factory = ViewModelFactorys(repositoy)
+            val viewModelClass: ViewModelClass = viewModel(
+                factory = factory
+            )
+            MenuMobile(
+                viewModelClass = viewModelClass
+            ) {
+                ScreenHome(
+                    viewModelClass = viewModelClass
+                )
             }
+
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    RadioFreeTheme {
-        Greeting("Android")
     }
 }

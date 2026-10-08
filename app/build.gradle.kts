@@ -10,7 +10,7 @@
     android {
         namespace = "com.example.radiofree"
 
-        compileSdk = 35
+        compileSdk = 36
 
         defaultConfig {
             applicationId = "com.example.radiofree"
@@ -65,6 +65,8 @@
 
         implementation("androidx.compose.material3:material3")
         implementation("androidx.compose.material:material-icons-extended")
+        implementation(libs.androidx.material3)
+        implementation(libs.androidx.monitor)
 
         debugImplementation("androidx.compose.ui:ui-tooling")
 
@@ -80,6 +82,6 @@
         implementation("androidx.room:room-runtime:2.7.1")
         implementation("androidx.room:room-ktx:2.7.1")
         ksp("androidx.room:room-compiler:2.7.1")
-
+        implementation("androidx.media3:media3-exoplayer:1.10.1")
         implementation("com.google.code.gson:gson:2.13.1")
     }

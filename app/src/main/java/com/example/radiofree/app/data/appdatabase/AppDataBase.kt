@@ -13,6 +13,8 @@ import com.example.radiofree.app.data.dao.RadioStatesDAO
     ], version = 1,
     exportSchema = false,
 )
+
+
 abstract class AppDataBase: RoomDatabase() {
     abstract fun radiostates(): RadioStatesDAO
 }
