@@ -8,22 +8,29 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -33,6 +40,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
@@ -49,12 +57,16 @@ import kotlin.math.log
 
 @Composable
 fun CardRadio(
-    viewModelClass: ViewModelClass
+    viewModelClass: ViewModelClass,
+    radios: List<RadioStation>,
+    modifier: Modifier = Modifier
 ) {
     val rdios by viewModelClass.radios.collectAsState()
     val context = LocalContext.current
     val player by remember { mutableStateOf(ExoPlayer.Builder(context).build()) }
     val playing by viewModelClass.playing.collectAsState()
+    val isFavorites by viewModelClass.isFavorite.collectAsState()
+    val favorite by viewModelClass.favorites.collectAsState()
     DisposableEffect(player) {
         val listener = object : androidx.media3.common.Player.Listener {
 
@@ -91,89 +103,124 @@ fun CardRadio(
         }
     }
 
-    Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
-        rdios.forEach { radiosState ->
-            val isPLyaing = radiosState.stationUuid == playing
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(modifier = Modifier.fillMaxWidth(0.5f)) {
+    LazyColumn(
+        modifier = Modifier,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(items = radios, key = { it.stationUuid }) { radio ->
+
+
+            val isPlaying = radio.stationUuid == playing
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(120.dp)
+                    .padding(7.dp)
+                    .clip(RoundedCornerShape(20.dp)),
+
+                ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(5.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
                     AsyncImage(
-                        model = radiosState.favicon,
-                        contentDescription = radiosState.name,
+                        model = radio.favicon,
+                        contentDescription = radio.name,
                         modifier = Modifier
-                            .width(30.dp)
-                            .height(30.dp)
+                            .width(80.dp)
+                            .height(80.dp)
+                            .clip(
+                                RoundedCornerShape(60.dp)
+                            )
+
                     )
                     Text(
-                        text = radiosState.name,
+                        text = radio.name,
                         maxLines = 2,
                         color = Color.Blue,
-                        fontSize = 11.sp,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth(1f)
+                        fontSize = 14.sp,
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier.fillMaxWidth(0.7f)
                     )
-                }
-                if (isPLyaing) {
-                    IconButton(onClick = {
-                        player.pause()
-                        viewModelClass.setPlayingStationUiid(null)
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.Pause, ""
-                        )
-                    }
-                } else {
-                    IconButton(onClick = {
-                        android.util.Log.e("RadioFree", "1 - Clique no Play")
 
-                        try {
-                            android.util.Log.e("RadioFree", "2 - Criando MediaItem")
-                            android.util.Log.d(
-                                "RadioFree",
-                                "Rádio: ${radiosState.name} | URL: ${radiosState.urlResolved}"
+
+                    Column(
+                        modifier = Modifier.fillMaxHeight(),
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        IconButton(
+                            onClick = {
+                                if (isPlaying) {
+                                    Toast.makeText(
+                                        context,
+                                        "Rádio pausada: ${radio.name}", Toast.LENGTH_SHORT
+                                    ).show()
+                                    player.pause()
+                                    viewModelClass.setPlayingStationUiid(null)
+                                } else {
+                                    val url = radio.url.ifBlank {
+                                        radio.url
+                                    }
+
+                                    if (url.isBlank()) {
+                                        Toast.makeText(
+                                            context, "URL não disponivel", Toast.LENGTH_SHORT
+                                        ).show()
+                                    } else {
+                                        try {
+                                            val radioItem = MediaItem.Builder()
+                                                .setUri(radio.urlResolved?.ifBlank { radio.url })
+                                                .setMediaId(radio.stationUuid)
+                                                .build()
+                                            player.setMediaItem(radioItem)
+                                            viewModelClass.setPlayingStationUiid(radio.stationUuid)
+                                            Toast.makeText(
+                                                context,
+                                                "Reproduzindo: ${radio.name}", Toast.LENGTH_SHORT
+                                            ).show()
+                                            player.prepare()
+                                            player.play()
+                                        } catch (e: Exception) {
+                                            Toast.makeText(
+                                                context,
+                                                "Erro ao reproduzir", Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                    }
+
+                                }
+                            }) {
+
+                            Icon(
+                                imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayCircle,
+                                contentDescription = if (isPlaying) "pausar" else "tocar",
+                                modifier = Modifier.size(40.dp),
+                                tint = MaterialTheme.colorScheme.onBackground
                             )
-                            val item = MediaItem.Builder()
-                                .setUri(radiosState.urlResolved.ifBlank { radiosState.url })
-                                .setMediaId(radiosState.stationUuid)
-                                .build()
 
-                            android.util.Log.e("RadioFree", "3 - Definindo mídia")
-                            player.setMediaItem(item)
-                            viewModelClass.setPlayingStationUiid(radiosState.stationUuid)
-
-                            android.util.Log.e("RadioFree", "4 - Preparando player")
-                            player.prepare()
-
-                            android.util.Log.e("RadioFree", "5 - Iniciando reprodução")
-                            player.play()
-
-                            android.util.Log.e("RadioFree", "6 - Play executado")
-                            Toast.makeText(
-                                context,
-                                "Reproduzindo: ${radiosState.name}",
-                                Toast.LENGTH_LONG
-                            ).show()
-
-                        } catch (e: Exception) {
-                            android.util.Log.e(
-                                "RadioFree",
-                                "ERRO NO CLIQUE",
-                                e
+                        }
+                        val isfavorites = favorite.any {
+                            it.stationUuid == radio.stationUuid
+                        }
+                        IconButton(onClick = {
+                            if (!isfavorites) {
+                                viewModelClass.addAosFavoritos(radio)
+                            } else {
+                                viewModelClass.deletarDosFavoritos(radio.stationUuid)
+                            }
+                        }) {
+                            Icon(
+                                imageVector = if (isfavorites) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                                contentDescription = "Adicionar aos favoritos",
+                                modifier = Modifier.size(40.dp),
                             )
                         }
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.PlayCircle,
-                            modifier = Modifier.size(50.dp),
-                            tint = Color.Blue,
-                            contentDescription = "Tocar: ${radiosState.name}"
-                        )
                     }
                 }
             }
         }
     }
 }
+
+

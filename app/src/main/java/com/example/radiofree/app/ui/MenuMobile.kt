@@ -64,7 +64,8 @@ fun MenuMobile(viewModelClass: ViewModelClass, content: @Composable () -> Unit) 
     ModalNavigationDrawer(
         drawerState = drawner,
         drawerContent = {
-            ModalDrawerSheet {
+            ModalDrawerSheet(modifier = Modifier.statusBarsPadding()) {
+
                 menu.forEach { menuitem ->
                     Text(text = menuitem.title)
                 }
@@ -72,54 +73,56 @@ fun MenuMobile(viewModelClass: ViewModelClass, content: @Composable () -> Unit) 
         }
     ) {
         Scaffold(
-            modifier = Modifier.statusBarsPadding(),
             topBar = {
-            TopAppBar(
-                title = {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text("RadioFree")
+                TopAppBar(
+                    title = {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text("RadioFree")
+                            IconButton(
+                                enabled = !isLoading,
+                                onClick = {
+                                    viewModelClass.pegarTodasAsEstacoesDeRadios()
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Refresh,
+                                    contentDescription = "Recarregar estações"
+                                )
+                            }
+
+                        }
+                    }, navigationIcon = {
                         IconButton(
-                            enabled = !isLoading,
                             onClick = {
-                                viewModelClass.pegarTodasAsEstacoesDeRadios()
+                                scope.launch {
+                                    drawner.open()
+                                }
                             }
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Refresh,
-                                contentDescription = "Recarregar estações"
+                                imageVector = Icons.Default.Menu,
+                                contentDescription = "Abrir menu principal"
                             )
                         }
-
                     }
-                }, navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            scope.launch {
-                                drawner.open()
-                            }
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Menu,
-                            contentDescription = "Abrir menu principal"
-                        )
-                    }
-                }
-            )
-        }
+                )
+            }
         ) { innerPadding ->
 
             Box(
-                modifier = Modifier.padding(innerPadding)
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .statusBarsPadding()
+                    .fillMaxSize()
+                    .padding(10.dp)
             ) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(10.dp)
-                        .verticalScroll(rememberScrollState())
                 ) {
                     content()
 

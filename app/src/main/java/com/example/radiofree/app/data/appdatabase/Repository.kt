@@ -16,28 +16,31 @@ import java.util.UUID
 class Repository(
     private val apiResponde: ApiResponde, val radioStatesDAO: RadioStatesDAO
 ) {
-val _languages = MutableStateFlow<List<Languages>>(emptyList())
+    val _languages = MutableStateFlow<List<Languages>>(emptyList())
     val languages: StateFlow<List<Languages>> = _languages.asStateFlow()
 
     val _isFavorite = MutableStateFlow(false)
     val isFavorite: StateFlow<Boolean> = _isFavorite
 
 
-    suspend fun checkFavotire(statiUUID: String){
+    suspend fun checkFavotire(statiUUID: String) {
         _isFavorite.value = radioStatesDAO.isFavorite(statiUUID)
     }
 
     suspend fun addToFavorites(radioStation: RadioStation) {
         radioStatesDAO.insertToFavorites(radioStation)
+        _isFavorite.value = radioStatesDAO.isFavorite(radioStation.stationUuid)
     }
 
-    suspend fun removeFromFavorites(radioStation: RadioStation){
+    suspend fun removeFromFavorites(radioStation: String) {
         radioStatesDAO.deleteFromFavorites(radioStation)
+        _isFavorite.value = radioStatesDAO.isFavorite(radioStation)
     }
 
-    suspend fun getAllFavotires(): Flow<List<RadioStation>>{
+    fun getAllFavotires(): Flow<List<RadioStation>> {
         return radioStatesDAO.getAllFavorites()
     }
+
     suspend fun getAllStations(
         order: String = "name",
         reverse: Boolean = false,

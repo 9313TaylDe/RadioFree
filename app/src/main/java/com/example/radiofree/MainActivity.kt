@@ -35,7 +35,8 @@ class MainActivity : ComponentActivity() {
                 applicationContext,
                 AppDataBase::class.java,
                 "db"
-            ).build()
+            ).fallbackToDestructiveMigration().build()
+
             val appDataBase = database.radiostates()
 
             val repositoy = Repository(

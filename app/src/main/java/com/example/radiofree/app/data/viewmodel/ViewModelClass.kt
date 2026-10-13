@@ -8,8 +8,10 @@ import com.example.radiofree.app.data.classes.Languages
 import com.example.radiofree.app.data.classes.RadioStation
 import com.example.radiofree.app.data.classes.State
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class ViewModelClass(val repository: Repository) : ViewModel() {
@@ -29,19 +31,30 @@ class ViewModelClass(val repository: Repository) : ViewModel() {
     val playing: StateFlow<String?> = _playing.asStateFlow()
     val _isFavorite = MutableStateFlow<List<RadioStation>>(emptyList())
     val isFavorite: StateFlow<List<RadioStation>> = _isFavorite.asStateFlow()
+
+    val favorites = repository.getAllFavotires().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = emptyList()
+    )
+
     fun setPlayingStationUiid(uiid: String?) {
         _playing.value = uiid
     }
 
     fun isPlayingStation(uuid: String): Boolean {
-
         return _playing.value == uuid
-
     }
 
-    fun addAosFavoritos(radioStation: RadioStation){
+    fun addAosFavoritos(radioStation: RadioStation) {
         viewModelScope.launch {
             repository.addToFavorites(radioStation)
+        }
+    }
+
+    fun deletarDosFavoritos(radioStation: String) {
+        viewModelScope.launch {
+            repository.removeFromFavorites(radioStation)
         }
     }
 

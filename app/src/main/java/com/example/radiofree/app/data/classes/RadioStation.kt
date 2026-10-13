@@ -1,3 +1,4 @@
+
 package com.example.radiofree.app.data.classes
 
 import androidx.room.Entity
@@ -7,101 +8,112 @@ import com.google.gson.annotations.SerializedName
 @Entity(tableName = "RadioStation")
 data class RadioStation(
 
-    @SerializedName("changeuuid")
     @PrimaryKey
-
-    val changeUuid: String,
-
     @SerializedName("stationuuid")
     val stationUuid: String,
 
-    @SerializedName("serveruuid")
-    val serverUuid: String,
+    @SerializedName("changeuuid")
+    val changeUuid: String? = null,
 
+    @SerializedName("serveruuid")
+    val serverUuid: String? = null,
+
+    @SerializedName("name")
     val name: String,
 
+    @SerializedName("url")
     val url: String,
 
     @SerializedName("url_resolved")
-    val urlResolved: String,
+    val urlResolved: String? = null,
 
-    val homepage: String,
+    @SerializedName("homepage")
+    val homepage: String? = null,
 
-    val favicon: String?,
+    @SerializedName("favicon")
+    val favicon: String? = null,
 
-    val tags: String,
+    @SerializedName("tags")
+    val tags: String? = null,
 
-    val country: String?,
+    @SerializedName("country")
+    val country: String? = null,
 
     @SerializedName("countrycode")
-    val countryCode: String,
+    val countryCode: String? = null,
 
     @SerializedName("iso_3166_2")
-    val iso31662: String?,
+    val iso31662: String? = null,
 
-    val state: String,
+    @SerializedName("state")
+    val state: String? = null,
 
-    val language: String,
+    @SerializedName("language")
+    val language: String? = null,
 
     @SerializedName("languagecodes")
-    val languageCodes: String,
+    val languageCodes: String? = null,
 
-    val votes: Int,
+    @SerializedName("votes")
+    val votes: Int = 0,
 
     @SerializedName("lastchangetime")
-    val lastChangeTime: String,
+    val lastChangeTime: String? = null,
 
     @SerializedName("lastchangetime_iso8601")
-    val lastChangeTimeIso8601: String,
+    val lastChangeTimeIso8601: String? = null,
 
-    val codec: String,
+    @SerializedName("codec")
+    val codec: String? = null,
 
-    val bitrate: Int,
+    @SerializedName("bitrate")
+    val bitrate: Int = 0,
 
-    val hls: Int,
+    @SerializedName("hls")
+    val hls: Int = 0,
 
     @SerializedName("lastcheckok")
-    val lastCheckOk: Int,
+    val lastCheckOk: Int = 0,
 
     @SerializedName("lastchecktime")
-    val lastCheckTime: String,
+    val lastCheckTime: String? = null,
 
     @SerializedName("lastchecktime_iso8601")
-    val lastCheckTimeIso8601: String,
+    val lastCheckTimeIso8601: String? = null,
 
     @SerializedName("lastcheckoktime")
-    val lastCheckOkTime: String,
+    val lastCheckOkTime: String? = null,
 
     @SerializedName("lastcheckoktime_iso8601")
-    val lastCheckOkTimeIso8601: String,
+    val lastCheckOkTimeIso8601: String? = null,
 
     @SerializedName("lastlocalchecktime")
-    val lastLocalCheckTime: String?,
+    val lastLocalCheckTime: String? = null,
 
     @SerializedName("lastlocalchecktime_iso8601")
-    val lastLocalCheckTimeIso8601: String?,
+    val lastLocalCheckTimeIso8601: String? = null,
 
     @SerializedName("clicktimestamp")
-    val clickTimestamp: String,
+    val clickTimestamp: String? = null,
 
     @SerializedName("clicktimestamp_iso8601")
-    val clickTimestampIso8601: String?,
+    val clickTimestampIso8601: String? = null,
 
     @SerializedName("clickcount")
-    val clickCount: Int,
+    val clickCount: Int = 0,
 
     @SerializedName("clicktrend")
-    val clickTrend: Int,
+    val clickTrend: Int = 0,
 
     @SerializedName("ssl_error")
-    val sslError: Int,
+    val sslError: Int = 0,
 
     @SerializedName("geo_lat")
-    val geoLat: Float?,
+    val geoLat: Double? = null,
 
     @SerializedName("geo_long")
-    val geoLong: Float?,
+    val geoLong: Double? = null,
 
     @SerializedName("has_extended_info")
-    val hasExtendedInfo: Boolean
+    val hasExtendedInfo: Boolean? = null
 )
